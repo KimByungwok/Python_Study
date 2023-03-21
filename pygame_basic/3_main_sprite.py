@@ -12,7 +12,7 @@ screen = pygame.display.set_mode((screen_width, screen_height)) # 화면 크기 
 pygame.display.set_caption("파이썬 게임")
 
 # 배경 이미지 불러오기
-background_image = pygame.image.load("/Users/byungwook/PycharmProjects/python_game/pygame_basic/background.png")
+background_image = pygame.image.load("/pygame_project/image/background.png")
 
 # 캐릭터 (스프라이트) 생성
 character_image = pygame.image.load("/Users/byungwook/PycharmProjects/python_game/pygame_basic/character.png")

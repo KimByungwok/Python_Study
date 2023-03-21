@@ -35,7 +35,7 @@ clock = pygame.time.Clock()
 
 # 1. 사용자 게임 초기화(배경,이미지,좌표,폰트,속도 등)
 # 배경 만들기
-background = pygame.image.load("/Users/byungwook/PycharmProjects/python_game/pygame_basic/background.png")
+background = pygame.image.load("/pygame_project/image/background.png")
 
 # 캐릭터 만들기
 character = pygame.image.load("/Users/byungwook/PycharmProjects/python_game/pygame_basic/character.png")

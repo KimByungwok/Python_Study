@@ -15,7 +15,7 @@ pygame.display.set_caption("파이썬 게임")
 clock = pygame.time.Clock()
 
 # 배경 이미지 불러오기
-background_image = pygame.image.load("//Users/byungwook/PycharmProjects/python_game/pygame_basic/background.png")
+background_image = pygame.image.load("/pygame_project/image/background.png")
 
 # 캐릭터 (스프라이트) 생성
 character_image = pygame.image.load("/Users/byungwook/PycharmProjects/python_game/pygame_basic/character.png")
