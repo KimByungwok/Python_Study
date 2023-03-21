@@ -15,10 +15,10 @@ pygame.display.set_caption("파이썬 게임")
 clock = pygame.time.Clock()
 
 # 배경 이미지 불러오기
-background_image = pygame.image.load("/Users/byungwook/Python/pygame_basic/backgroud.png")
+background_image = pygame.image.load("//Users/byungwook/PycharmProjects/python_game/pygame_basic/background.png")
 
 # 캐릭터 (스프라이트) 생성
-character_image = pygame.image.load("/Users/byungwook/Python/pygame_basic/character.png")
+character_image = pygame.image.load("/Users/byungwook/PycharmProjects/python_game/pygame_basic/character.png")
 character_size = character_image.get_size() # 이미지의 크기를 구해옴
 character_width = character_size[0] # 캐릭터의 가로 크기
 character_height = character_size[1] # 캐릭터의 새로 크기
@@ -33,7 +33,7 @@ to_y = 0
 speed = 0.5
 
 # 적 캐릭터
-enemy = pygame.image.load("/Users/byungwook/Python/pygame_basic/enemy.png")
+enemy = pygame.image.load("/Users/byungwook/PycharmProjects/python_game/pygame_basic/enemy.png")
 enemy_size = enemy.get_size() # 이미지의 크기를 구해옴
 enemy_width = enemy_size[0] # 캐릭터의 가로 크기
 enemy_height = enemy_size[1] # 캐릭터의 새로 크기
