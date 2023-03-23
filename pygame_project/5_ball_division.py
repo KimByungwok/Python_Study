@@ -17,99 +17,103 @@
 # 4. 무기 : 20 * 430 - weapon.png
 # 5. 공 : 160 * 160, 80 * 80, 40 * 40, 20 * 20 - balloon1.png ~ balloon4.png
 
-import pygame
 import os
+import pygame
 
-################################################
-# 기본 초기화 (반드시 해야 함)
+##############################################################
+# normal init (must do)
+pygame.init()
 
-pygame.init()  # init 으로 초기화 하기
+# display size set
+screen_width = 480  # width size
+screen_height = 640  # height size
+screen = pygame.display.set_mode((screen_width, screen_height))
 
-# 화면 크기 설정
-screen_width = 480  # 가로
-screen_height = 640  # 세로
-screen = pygame.display.set_mode((screen_width, screen_height))  # 화면 크기 설정
+# display title set
+pygame.display.set_caption("고전 게임")
 
-
-# fps
+# FPS
 clock = pygame.time.Clock()
-#################################################
+##############################################################
 
-# 1. 사용자 게임 초기화(배경,이미지,좌표,폰트,속도 등)
-current_path = os.path.dirname(__file__)  # 현재 파일의 위치 반환
-image_path = os.path.join(current_path, "image")  # image 폴더 위치 반환
+# 1. user game init (background, game image, location, speed, font '''others''')
+current_path = os.path.dirname(__file__)  # return current file path
+image_path = os.path.join(current_path, "image")  # return image folder path
 
-# background make
+# make background
 background = pygame.image.load(os.path.join(image_path, "background.png"))
-# stage make
+
+# make stage
 stage = pygame.image.load(os.path.join(image_path, "stage.png"))
 stage_size = stage.get_rect().size
-stage_height = stage_size[1]  # stage 의 높이 위에 캐릭터를 두기 위해 사용
-# character make
+stage_height = stage_size[1]  # character location up on the stage
+
+# make character
 character = pygame.image.load(os.path.join(image_path, "character.png"))
 character_size = character.get_rect().size
 character_width = character_size[0]
 character_height = character_size[1]
 character_x_pos = (screen_width / 2) - (character_width / 2)
-character_y_pos = (screen_height - character_height)
+character_y_pos = screen_height - character_height - stage_height
 
-# character
+# character move direction
 character_to_x = 0
 
 # character speed
 character_speed = 5
 
-# weapon make
+# make weapon
 weapon = pygame.image.load(os.path.join(image_path, "weapon.png"))
 weapon_size = weapon.get_rect().size
 weapon_width = weapon_size[0]
 
-# weapon is one time many attack
+# shoot multiple weapons
 weapons = []
 
 # weapon speed
 weapon_speed = 10
 
-# make move_ball
-ball_img = [
+# make ball (4 size)
+ball_images = [
 	pygame.image.load(os.path.join(image_path, "balloon1.png")),
 	pygame.image.load(os.path.join(image_path, "balloon2.png")),
 	pygame.image.load(os.path.join(image_path, "balloon3.png")),
-	pygame.image.load(os.path.join(image_path, "balloon4.png"))
-]
+	pygame.image.load(os.path.join(image_path, "balloon4.png"))]
 
-# ball_size_init_speed
-ball_speed_y = [-18, -15, -12, -9]
+# ball size init speed
+ball_speed_y = [-18, -15, -12, -9]  # index 0, 1, 2, 3 에 해당하는 값
 
-# ball_info
+# balls
 balls = []
 
+# first ball add
 balls.append({
-	"pos_x": 50,  # ball x_pos
-	"pos_y": 50,  # ball y_pos
-	"img_index": 0,  # ball image index
-	"ball_x": 3,  # x축 이동방향, -3 이면 왼쪽, 3 이면 오른쪽
-	"ball_y": -6,  # y 축 이동방향
-	"init_speed_y": ball_speed_y[0]  # y 최초 속도
-})
+	"pos_x": 50,  # 공의 x 좌표
+	"pos_y": 50,  # 공의 y 좌표
+	"img_idx": 0,  # 공의 이미지 인덱스
+	"to_x": 3,  # x축 이동방향, -3 이면 왼쪽으로, 3 이면 오른쪽으로
+	"to_y": -6,  # y축 이동방향,
+	"init_spd_y": ball_speed_y[0]})  # y 최초 속도
 
-# 이벤트 루프
-running = True  # 게임이 진행중인가?
+# remove ball, weapon
+weapon_to_remove = -1
+ball_to_remove = -1
+
+running = True
 while running:
-	datetime = clock.tick(30)  # 30
-	# print("fps: " + str(clock.get_fps()))
+	datetime = clock.tick(30)
 
-	# 2. 이벤트 처리(키보드, 마우스 등)
-	for event in pygame.event.get():  # 어떤 이벤트가 발생하였는가?
-		if event.type == pygame.QUIT:  # 창이 닫히는 이벤트가 발생하였는가?
-			running = False  # 게임이 진행중이 아님
+	# 2. event process (keyboard, mouse)
+	for event in pygame.event.get():
+		if event.type == pygame.QUIT:
+			running = False
 
 		if event.type == pygame.KEYDOWN:
-			if event.key == pygame.K_LEFT:
+			if event.key == pygame.K_LEFT:  # character to the left
 				character_to_x -= character_speed
-			elif event.key == pygame.K_RIGHT:
+			elif event.key == pygame.K_RIGHT:  # character to the right
 				character_to_x += character_speed
-			elif event.key == pygame.K_SPACE:
+			elif event.key == pygame.K_SPACE:  # weapon shoot
 				weapon_x_pos = character_x_pos + (character_width / 2) - (weapon_width / 2)
 				weapon_y_pos = character_y_pos
 				weapons.append([weapon_x_pos, weapon_y_pos])
@@ -118,7 +122,7 @@ while running:
 			if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
 				character_to_x = 0
 
-	# 3. 게임 캐릭터 위치 정의
+	# 3. game character position
 	character_x_pos += character_to_x
 
 	if character_x_pos < 0:
@@ -126,119 +130,130 @@ while running:
 	elif character_x_pos > screen_width - character_width:
 		character_x_pos = screen_width - character_width
 
-	# weapon location
-	weapons = [[w[0], w[1] - weapon_speed] for w in weapons]
+	# weapon position
+	# 100, 200 -> 180, 160, 140, ...
+	# 500, 200 -> 180, 160, 140, ...
+	weapons = [[w[0], w[1] - weapon_speed] for w in weapons]  # weapon position up
 
-	# weapon destruction
+	# weapon position remove when it is above the screen
 	weapons = [[w[0], w[1]] for w in weapons if w[1] > 0]
 
-	# ball location
-	for ball_index, ball_value in enumerate(balls):
-		ball_pos_x = ball_value["pos_x"]
-		ball_pos_y = ball_value["pos_y"]
-		ball_img_index = ball_value["img_index"]
+	# ball position
+	for ball_idx, ball_val in enumerate(balls):
+		ball_pos_x = ball_val["pos_x"]
+		ball_pos_y = ball_val["pos_y"]
+		ball_img_idx = ball_val["img_idx"]
 
-		ball_size = ball_img[ball_img_index].get_rect().size
+		ball_size = ball_images[ball_img_idx].get_rect().size
 		ball_width = ball_size[0]
 		ball_height = ball_size[1]
 
-		# 가로벽에 닿았을 때 공 이동 위치 변경(튕겨 나오는 효과)
-		if ball_pos_x <= 0 or ball_pos_x > screen_width - ball_width:
-			ball_value["ball_x"] = ball_value["ball_x"] * -1
+		# change the ball direction when it hits the wall
+		if ball_pos_x < 0 or ball_pos_x > screen_width - ball_width:
+			ball_val["to_x"] = ball_val["to_x"] * -1
 
-		# 세로 위치
+		# change the ball direction when it hits the stage
 		if ball_pos_y >= screen_height - stage_height - ball_height:
-			ball_value["ball_y"] = ball_value["init_speed_y"]
-		else:  # 그 외의 모든 경우에는 속도를 증가
-			ball_value["ball_y"] += 0.5
+			ball_val["to_y"] = ball_val["init_spd_y"]
+		else:  # when it is in the air
+			ball_val["to_y"] += 0.5
 
-		ball_value["pos_x"] += ball_value["ball_x"]
-		ball_value["pos_y"] += ball_value["ball_y"]
+		ball_val["pos_x"] += ball_val["to_x"]
+		ball_val["pos_y"] += ball_val["to_y"]
 
-	# 4. 충돌 처리
+	# 4. collision check
 
-	# character rect info update
+	# character rect information update
 	character_rect = character.get_rect()
 	character_rect.left = character_x_pos
 	character_rect.top = character_y_pos
 
-	for ball_index, ball_value in enumerate(balls):
-		ball_pos_x = ball_value["pos_x"]
-		ball_pos_y = ball_value["pos_y"]
-		ball_img_index = ball_value["img_index"]
+	for ball_idx, ball_val in enumerate(balls):
+		ball_pos_x = ball_val["pos_x"]
+		ball_pos_y = ball_val["pos_y"]
+		ball_img_idx = ball_val["img_idx"]
 
-		# ball rect info update
-		ball_rect = ball_img[ball_img_index].get_rect()
+		# ball rect information update
+		ball_rect = ball_images[ball_img_idx].get_rect()
 		ball_rect.left = ball_pos_x
 		ball_rect.top = ball_pos_y
 
-		# character & ball collision
-		# if character_rect.colliderect(ball_rect):
-		# 	print("응 ㅅㄱ 부딪힘")
-		# 	running = False
-		# 	break
-		# ball & weapon collision
-		for weapon_index, weapon_value in enumerate(weapons):
-			weapon_pos_x = weapon_value[0]
-			weapon_pos_y = weapon_value[1]
+		# character and ball collision check
+		if character_rect.colliderect(ball_rect):
+			print("응 ㅅㄱ 님 털림ㅋ")
+			running = False
+			break
 
-			# weapon rect info update
+		# ball and weapon collision check
+		for weapon_idx, weapon_val in enumerate(weapons):
+			weapon_pos_x = weapon_val[0]
+			weapon_pos_y = weapon_val[1]
+
+			# weapon rect information update
 			weapon_rect = weapon.get_rect()
 			weapon_rect.left = weapon_pos_x
 			weapon_rect.top = weapon_pos_y
 
 			# collision check
 			if weapon_rect.colliderect(ball_rect):
-				weapon_to_remove = weapon_index # 해당 무기 없애기 위한 값 설정
-				ball_to_remove = ball_index # 해당 공 없애기 위한 값 설정
+				weapon_to_remove = weapon_idx  # set the value of that weapon to be removed
+				ball_to_remove = ball_idx  # set the value of that ball to be removed
 
-			# 가장 작은 공이 아니라면 다음 단계의 공으로 나눠주기
-			if ball_img_index < 3:
-				# 현재 공 크기 정보를 가지고 옴
-				ball_width = ball_rect.size[0]
-				ball_height = ball_rect.size[1]
+				# if the ball is small, it disappears
+				if ball_img_idx < 3:
+					# get the current ball size
+					ball_width = ball_rect.size[0]
+					ball_height = ball_rect.size[1]
 
-				# 나눠진 공 정보
-				small_ball_rect = ball_img[ball_img_index + 1].get_rect()
-				small_ball_width = small_ball_rect.size[0]
-				small_ball_height = small_ball_rect.size[1]
+					# divide the ball into 2 small balls
+					small_ball_rect = ball_images[ball_img_idx + 1].get_rect()
+					small_ball_width = small_ball_rect.size[0]
+					small_ball_height = small_ball_rect.size[1]
 
-				# 왼쪽으로 튕겨나가는 작은 공
-				balls.append({
-					"pos_x": ball_pos_x + (ball_width / 2) - (small_ball_width / 2), # 공의 x 좌표
-					"pos_y": ball_pos_y + (ball_height / 2) - (small_ball_height / 2), # 공의 y 좌표
-					"to_x": -3, # x축 이동 방향, -3이면 왼쪽으로, 3이면 오른쪽으로
-					"to_y": -6, # y축 이동 방향
-					"init_speed_y": ball_speed_y[ball_img_index + 1]})
-				# 오른쪽으로 튕겨나가는 작은 공
-				balls.append({
-					"pos_x": ball_pos_x + (ball_width / 2) - (small_ball_width / 2), # 공의 x 좌표
-					"pos_y": ball_pos_y + (ball_height / 2) - (small_ball_height / 2), # 공의 y 좌표
-					"img_index": ball_img_index + 1, # 공의 이미지 인덱스
-					"to_x": 3, # x축 이동 방향, -3이면 왼쪽으로, 3이면 오른쪽으로
-					"to_y": -6, # y축 이동 방향
-					"init_speed_y": ball_speed_y[ball_img_index + 1]})
-			break
+					# add the small ball to the left
+					balls.append({
+						"pos_x": ball_pos_x + (ball_width / 2) - (small_ball_width / 2),  # ball position x
+						"pos_y": ball_pos_y + (ball_height / 2) - (small_ball_height / 2),  # ball position y
+						"img_idx": ball_img_idx + 1,  # ball image index
+						"to_x": -3,  # x position move direction, -3 is left, 3 is right
+						"to_y": -6,  # y position move direction
+						"init_spd_y": ball_speed_y[ball_img_idx + 1]})  # y speed
 
+					# add the small ball to the right
+					balls.append({
+						"pos_x": ball_pos_x + (ball_width / 2) - (small_ball_width / 2),  # ball position x
+						"pos_y": ball_pos_y + (ball_height / 2) - (small_ball_height / 2),  # ball position y
+						"img_idx": ball_img_idx + 1,  # ball image index
+						"to_x": 3,  # x position move direction, -3 is left, 3 is right
+						"to_y": -6,  # y position move direction
+						"init_spd_y": ball_speed_y[ball_img_idx + 1]})  # y speed
 
+				break
 
-# 5. 화면에 그리기
-screen.blit(background, (0, 0))
+	# remove the ball and weapon that collided
+	if ball_to_remove > -1:
+		del balls[ball_to_remove]
+		ball_to_remove = -1
 
-for weapon_x_pos, weapon_y_pos in weapons:
-	screen.blit(weapon, (weapon_x_pos, weapon_y_pos))
+	if weapon_to_remove > -1:
+		del weapons[weapon_to_remove]
+		weapon_to_remove = -1
 
-for index, value in enumerate(balls):
-	ball_pos_x = value["pos_x"]
-	ball_pos_y = value["pos_y"]
-	ball_img_index = value["img_index"]
-	screen.blit(ball_img[ball_img_index], (ball_pos_x, ball_pos_y))
+	# 5. draw on the screen
+	screen.blit(background, (0, 0))
 
-screen.blit(stage, (0, screen_height - stage_height))
-screen.blit(character, (character_x_pos, character_y_pos - stage_height))
+	for weapon_x_pos, weapon_y_pos in weapons:
+		screen.blit(weapon, (weapon_x_pos, weapon_y_pos))
 
-pygame.display.update()  # 게임화면을 다시 그리기!
-# 딜레이 2초
-pygame.time.delay(2000)
-# False = 게임이 진행중이 아님
+	for idx, val in enumerate(balls):
+		ball_pos_x = val["pos_x"]
+		ball_pos_y = val["pos_y"]
+		ball_img_idx = val["img_idx"]
+		screen.blit(ball_images[ball_img_idx], (ball_pos_x, ball_pos_y))
+
+	screen.blit(stage, (0, screen_height - stage_height))
+	screen.blit(character, (character_x_pos, character_y_pos))
+
+	pygame.display.update()
+
 pygame.quit()
