@@ -2,7 +2,7 @@ from tkinter import *
 
 root = Tk()
 root.title("GUI Python")
-root.geometry("720x480") # 가로 * 세로
+root.geometry("720x480") # width x height
 
 listbox = Listbox(root, selectmode="extended", height=0) # selectmode="extended" : Multiple choices available, height=3 : show 3 items
 listbox.insert(0, "사과")
